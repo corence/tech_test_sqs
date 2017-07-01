@@ -1,6 +1,9 @@
+The key to testing this system is: it's intended for passing messages between multiple services.
+Therefore, we should focus our testing on multi-client configurations, not just on single-client cases.
 The main concepts that we want to test are:
  - given a lot of messages, do all of them get sent?
- - given high concurrency, does it still work?
+ - given a lot of clients sending at once, do the SQS guarantees get violated?
+ - given multiple queues, do they interfere with each other?
 
 Testing specific methods:
  - CreateQueue

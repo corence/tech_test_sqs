@@ -1,3 +1,6 @@
+
+// This is just a practice attempt to make sure we know how to use the SDK in a basic fashion. It isn't part of the final test suite.
+
 const AWS = require('aws-sdk');
 
 const sqs = new AWS.SQS({
