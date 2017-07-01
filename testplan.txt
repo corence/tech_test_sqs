@@ -1,0 +1,18 @@
+The main concepts that we want to test are:
+ - given a lot of messages, do all of them get sent?
+ - given high concurrency, does it still work?
+
+Testing specific methods:
+ - CreateQueue
+  -- provoke each possible error at least once
+ - SendMessage
+  -- provoke each possible error at least once
+  -- send in parallel from multiple clients at the same time -- try to provoke race conditions
+ - ReceiveMessage
+  -- provoke each possible error at least once
+ - DeleteMessage
+  -- don't delete the message, wait for the time to elapse, and see if it gets deleted anyway
+
+Things to keep in mind about the standard sqs queue are:
+ - messages may come more than once -- we need to handle this correctly in the test code
+ - messages may come out of order -- so we are not testing ordering at all

@@ -1,0 +1,15 @@
+{
+  "name": "sqs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sqs.js",
+  "dependencies": {
+    "aws-sdk": "^2.77.0"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+  },
+  "author": "Corey Knight <corence@gmail.com>",
+  "license": "ISC"
+}
