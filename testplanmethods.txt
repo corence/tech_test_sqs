@@ -41,7 +41,7 @@ Test cases:
  - Build a 262-145-byte message and make sure it's rejected
  - build various names that break the rules specified above, to verify each error
  - Type: see (4)
- - Value -- similar set of tests as in the MessageBody
+ - Value: see (4)
 
 4) Message Attribute Data Types and Validation
 For this section, we'll be testing 2 different things:
@@ -60,8 +60,14 @@ String – Strings are Unicode with UTF-8 binary encoding. For a list of code va
 
 Test cases:
  - The character encoding will be handled by the javascript sdk so we'll skip trying to test that.
- - Otherwise we'll just test 
- 
+ - As noted above, this section has the same restrictions as MessageBody so we'll test similar things
 
-4) MessageBody
+Relevant docs:
+Number – Numbers are positive or negative integers or floating point numbers. Numbers have sufficient range and precision to encompass most of the possible values that integers, floats, and doubles typically support. A number can have up to 38 digits of precision, and it can be between 10^-128 to 10^+126. Leading and trailing zeroes are trimmed.
+
+Test cases:
+ - The bit about "38 digits" is pretty vague -- but it looks like they're talking about decimal digits according to https://forums.aws.amazon.com/message.jspa?messageID=312432 -- so let's check that we can have 37 digits without losing precision
+ - We won't bother testing for leading and trailing zeroes being trimmed, although without a time limit we'd probably cover that too
+
+5) MessageBody
 
