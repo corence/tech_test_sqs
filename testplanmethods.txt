@@ -1,0 +1,67 @@
+
+facts to test for SendMessage:
+
+0) Required Parameters
+The SDK should give an error if the required params aren't included; we should also make sure one of our calls has only the required params.
+Test cases:
+ - for each required param, try sending without it -- should be rejected
+ - send with the minimum required params
+
+1) Supported Characters
+Relevant docs:
+A message can include only XML, JSON, and unformatted text. The following Unicode characters are allowed:
+#x9 | #xA | #xD | #x20 to #xD7FF | #xE000 to #xFFFD | #x10000 to #x10FFFF
+Any characters not included in this list will be rejected.
+
+Test cases:
+ - send with a lot of these characters in a message -- should not be rejected
+ - send with other characters -- provoke an error
+ - send with a single quote and a couple of other injection characters
+ - note: the above characters could be spread across the MessageAttribute and MessageBody (and maybe other fields) for extra test cases
+
+2) DelaySeconds
+Relevant docs:
+The length of time, in seconds, for which to delay a specific message. Valid values: 0 to 900. Maximum: 15 minutes. Messages with a positive DelaySeconds value become available for processing after the delay period is finished. If you don't specify a value, the default value for the queue applies.
+
+Test cases:
+ - add a delay; make sure the message isn't received for at least that long
+ - set a default delay and override it for some messages
+
+3) MessageAttribute
+Relevant docs:
+Each message attribute consists of the following items:
+Name – The message attribute name can contain the following characters: A-Z, a-z, 0-9, underscore(_), hyphen(-), and period (.). The name must not start or end with a period, and it should not have successive periods. The name is case-sensitive and must be unique among all attribute names for the message. The name can be up to 256 characters long. The name can't start with AWS. or Amazon. (or any variations in casing) because these prefixes are reserved for use by Amazon Web Services.
+Type – The supported message attribute data types are String, Number, and Binary. You can also provide custom information about the type. The data type has the same restrictions on the content as the message body. The data type is case-sensitive, and it can be up to 256 bytes long. For more information, see the Message Attribute Data Types and Validation section.
+Value – The user-specified message attribute value. For string data types, the value attribute has the same restrictions on the content as the message body. For more information, see SendMessage.
+
+Name, type, and value must not be empty or null. In addition, the message body should not be empty or null. All parts of the message attribute, including name, type, and value, are included in the message size restriction, which is currently 256 KB (262,144 bytes).
+
+Test cases:
+ - Build a 262,144-byte message and make sure it's accepted
+ - Build a 262-145-byte message and make sure it's rejected
+ - build various names that break the rules specified above, to verify each error
+ - Type: see (4)
+ - Value -- similar set of tests as in the MessageBody
+
+4) Message Attribute Data Types and Validation
+For this section, we'll be testing 2 different things:
+ - behaviour of the Type attribute itself
+ - interaction between Type and Value (and the validation that is supposed to happen here)
+
+Relevant docs:
+Message attribute data types identify how the message attribute values are handled by Amazon SQS. For example, if the type is a number, Amazon SQS validates that it's a number.
+(refer to docs at http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-attributes.html#message-attributes-items-validation )
+
+Test cases:
+ - Type = "String.abcd" and Value is 
+
+Relevant docs:
+String – Strings are Unicode with UTF-8 binary encoding. For a list of code values, see http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters.
+
+Test cases:
+ - The character encoding will be handled by the javascript sdk so we'll skip trying to test that.
+ - Otherwise we'll just test 
+ 
+
+4) MessageBody
+

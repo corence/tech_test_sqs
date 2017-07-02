@@ -1,10 +1,3 @@
-The key to testing this system is: it's intended for passing messages between multiple services.
-Therefore, we should focus our testing on multi-client configurations, not just on single-client cases.
-The main concepts that we want to test are:
- - given a lot of messages, do all of them get sent?
- - given a lot of clients sending at once, do the SQS guarantees get violated?
- - given multiple queues, do they interfere with each other?
-
 Testing specific methods:
  - CreateQueue
   -- provoke each possible error at least once
@@ -16,6 +9,20 @@ Testing specific methods:
  - DeleteMessage
   -- don't delete the message, wait for the time to elapse, and see if it gets deleted anyway
 
+Integration testing:
+The key to testing this system is: it's intended for passing messages between multiple services.
+Therefore, we should focus our testing on multi-client configurations, not just on single-client cases.
+
 Things to keep in mind about the standard sqs queue are:
  - messages may come more than once -- we need to handle this correctly in the test code
  - messages may come out of order -- so we are not testing ordering at all
+ 
+The high-level concepts that we want to test are:
+ - given a lot of messages, do all of them get sent?
+ - given a lot of clients sending at once, do the SQS guarantees get violated? specifically:
+   -- can 2 clients receive the same message? (ack, i guess this isn't a violation)
+   -- if clients fail to read messages and fail to delete them, do the messages get processed eventually?
+ - given multiple queues, do they interfere with each other?
+
+Test scenarios:
+ - send a lot of messages, each with a different delay. Make sure that they are all received at least once. (Implemented)
