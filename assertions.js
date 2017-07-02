@@ -1,14 +1,15 @@
 
-function equal(message, expected, actual) {
+function equal(message, actual, expected) {
 	if(expected !== actual) {
-        console.log('Failed assertion: ' + message + '. ' + expected + ' !== ' + actual);
+        console.log('Failed assertion: ' + message + '. ' + actual + ' should be === ' + expected);
         //throw Exception(message);
     }
 }
 
-function less_or_equal(message, expected, actual) {
-	if(expected !== actual) {
-        console.log('Failed assertion: ' + message + '. ' + expected + ' !== ' + actual);
+// assert that actual <= expected
+function less_or_equal(message, actual, expected) {
+	if(actual > expected) {
+        console.log('Failed assertion: ' + message + '. ' + actual + ' should be <= ' + expected);
         //throw Exception(message);
     }
 }
@@ -28,5 +29,6 @@ function falsy(message, actual) {
 }
 
 module.exports.equal = equal;
+module.exports.less_or_equal = less_or_equal;
 module.exports.truthy = truthy;
 module.exports.falsy = falsy;
