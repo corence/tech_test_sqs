@@ -25,4 +25,6 @@ The high-level concepts that we want to test are:
  - given multiple queues, do they interfere with each other?
 
 Test scenarios:
- - send a lot of messages, each with a different delay. Make sure that they are all received at least once. (Implemented)
+ - send a lot of messages, each with a different delay. Make sure that they are all received at least once. (Implemented in test_integration.js)
+ - send a lot of messages on different queues, overlapping with each other. Make sure that they are all received at least once.
+ - receive messages without deleting them; check that they stay hidden from other clients until the timeout expires for them to become visible again.

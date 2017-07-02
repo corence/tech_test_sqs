@@ -68,6 +68,3 @@ Number – Numbers are positive or negative integers or floating point numbers. 
 Test cases:
  - The bit about "38 digits" is pretty vague -- but it looks like they're talking about decimal digits according to https://forums.aws.amazon.com/message.jspa?messageID=312432 -- so let's check that we can have 37 digits without losing precision
  - We won't bother testing for leading and trailing zeroes being trimmed, although without a time limit we'd probably cover that too
-
-5) MessageBody
-

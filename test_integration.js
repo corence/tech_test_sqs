@@ -29,22 +29,7 @@ function testManyMessages() {
     sqs.createQueue({QueueName: 'Queue_for_many_messages'}, function(err, createData) {
         assert.falsy(err); // if errors come up here then we either have a configuration error or something sporadic like a network error. May need to rethink this if intermittent failures come up
 
-        console.log('Sending ' + dataToSend.length + ' messages...');
-
         let numMessagesAttempted = 0;
-
-        // Send all of the messages
-        dataToSend.forEach(function (message) {
-            sqs.sendMessage({
-                QueueUrl: createData.QueueUrl,
-                MessageBody: message,
-                DelaySeconds: numMessagesAttempted % 17 // each message is delayed between 0 and 16 seconds, but it's not random
-            }, function(err, sendData) {
-                assert.falsy(err);
-                ++numMessagesSent;
-            });
-            ++numMessagesAttempted;
-        });
 
         const receiveCallback = function receiveCallback(err, receiveData) {
             assert.falsy(err);
@@ -90,6 +75,21 @@ function testManyMessages() {
             QueueUrl: createData.QueueUrl,
             MaxNumberOfMessages: 5
         }, receiveCallback);
+        
+        // Send all of the messages
+        console.log('Sending ' + dataToSend.length + ' messages...');
+        dataToSend.forEach(function (message) {
+            sqs.sendMessage({
+                QueueUrl: createData.QueueUrl,
+                MessageBody: message,
+                DelaySeconds: numMessagesAttempted % 17 // each message is delayed between 0 and 16 seconds, but it's not random
+            }, function(err, sendData) {
+                assert.falsy(err);
+                ++numMessagesSent;
+            });
+            ++numMessagesAttempted;
+        });
+
     });
 }
 
