@@ -31,36 +31,43 @@ function testManyMessages() {
 
         console.log('Sending ' + dataToSend.length + ' messages...');
 
+        let numMessagesAttempted = 0;
+
         // Send all of the messages
         dataToSend.forEach(function (message) {
             sqs.sendMessage({
                 QueueUrl: createData.QueueUrl,
-                MessageBody: message
+                MessageBody: message,
+                DelaySeconds: numMessagesAttempted % 17 // each message is delayed between 0 and 16 seconds, but it's not random
             }, function(err, sendData) {
                 assert.falsy(err);
                 ++numMessagesSent;
             });
+            ++numMessagesAttempted;
         });
 
         const receiveCallback = function receiveCallback(err, receiveData) {
             assert.falsy(err);
+            if(receiveData && receiveData.Messages) {
+                // we need the above check because if there are no messages to receive (this can happen intermittently because of our DelaySeconds), the Javascript SDK sets Messages to null instead of []. Yuck
+                
+                receiveData.Messages.forEach(function (receivedMessage) {
+                    // Each of the messages has a distinct body.
+                    // Therefore -- If we haven't received a message with this body before, then record it and count it
+                    if(!dataReceived[receivedMessage.Body]) {
+                        dataReceived[receivedMessage.Body] = true;
+                        ++numMessagesReceived;
+                    }
 
-            receiveData.Messages.forEach(function (receivedMessage) {
-                // Each of the messages has a distinct body.
-                // Therefore -- If we haven't received a message with this body before, then record it and count it
-                if(!dataReceived[receivedMessage.Body]) {
-                    dataReceived[receivedMessage.Body] = true;
-                    ++numMessagesReceived;
-                }
-
-                // Delete the message from the SQS queue
-                sqs.deleteMessage({
-                    QueueUrl: createData.QueueUrl,
-                    ReceiptHandle: receivedMessage.ReceiptHandle
-                }, function(err, deletedData) {
-                    assert.falsy(err);
+                    // Delete the message from the SQS queue
+                    sqs.deleteMessage({
+                        QueueUrl: createData.QueueUrl,
+                        ReceiptHandle: receivedMessage.ReceiptHandle
+                    }, function(err, deletedData) {
+                        assert.falsy(err);
+                    });
                 });
-            });
+            }
 
             // Make sure we haven't received more (distinct) messages than we have sent!
             assert.less_or_equal(dataToSend.length, numMessagesReceived);
@@ -69,7 +76,8 @@ function testManyMessages() {
             if (numMessagesReceived < dataToSend.length) {
                 // call receiveMessage again! Each receiveMessage can return between 0 and 9 messages so the docs suggest to call it repeatedly if we want to get all of the relevant messages.
                 sqs.receiveMessage({
-                    QueueUrl: createData.QueueUrl
+                    QueueUrl: createData.QueueUrl,
+                    MaxNumberOfMessages: 5
                 }, receiveCallback);
             } else {
                 console.log('Received all ' + dataToSend.length + ' messages.');
@@ -79,7 +87,8 @@ function testManyMessages() {
         // Get the first Receive started
         console.log('Receiving ' + dataToSend.length + ' messages...');
         sqs.receiveMessage({
-            QueueUrl: createData.QueueUrl
+            QueueUrl: createData.QueueUrl,
+            MaxNumberOfMessages: 5
         }, receiveCallback);
     });
 }
